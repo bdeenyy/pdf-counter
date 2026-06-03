@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon></ApplicationIcon>
+    <AssemblyName>PdfCounter</AssemblyName>
+    <RootNamespace>PdfCounter</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>PdfCounter</Authors>
+    <Description>Подсчёт листов в PDF — перетащите файл или папку</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="UglyToad.PdfPig" Version="0.1.9" />
+  </ItemGroup>
+
+</Project>
