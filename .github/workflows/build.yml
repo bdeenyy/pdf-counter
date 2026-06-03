@@ -7,6 +7,15 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Версия SemVer (1.0.1). Пусто — из файла VERSION"
+        required: false
+        default: ""
+      publish_release:
+        description: "Создать GitHub Release с exe"
+        type: boolean
+        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -17,10 +26,38 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.version.outputs.number }}
+      publish_release: ${{ steps.version.outputs.publish_release }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $publishRelease = 'false'
+          if ($env:GITHUB_REF -like 'refs/tags/v*') {
+            $number = $env:GITHUB_REF -replace '^refs/tags/v',''
+            $publishRelease = 'true'
+          } elseif ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch') {
+            $inputVersion = '${{ inputs.version }}'.Trim()
+            if ($inputVersion) {
+              $number = $inputVersion
+            } else {
+              $number = (Get-Content -Path VERSION -Raw).Trim()
+            }
+            if ('${{ inputs.publish_release }}' -eq 'true') {
+              $publishRelease = 'true'
+            }
+          } else {
+            $number = (Get-Content -Path VERSION -Raw).Trim()
+          }
+          "number=$number" >> $env:GITHUB_OUTPUT
+          "publish_release=$publishRelease" >> $env:GITHUB_OUTPUT
+          Write-Host "Version: $number | Release: $publishRelease"
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -36,6 +73,7 @@ jobs:
           -c Release
           -r win-x64
           --self-contained true
+          -p:Version=${{ steps.version.outputs.number }}
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
           -o publish
@@ -43,14 +81,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: PdfCounter-win-x64
+          name: PdfCounter-${{ steps.version.outputs.number }}-win-x64
           path: publish/PdfCounter.exe
           if-no-files-found: error
           retention-days: 90
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: needs.build.outputs.publish_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,11 +97,17 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v5
         with:
-          name: PdfCounter-win-x64
+          name: PdfCounter-${{ needs.build.outputs.version }}-win-x64
           path: dist
+
+      - name: Prepare release asset
+        run: |
+          mv dist/PdfCounter.exe "dist/PdfCounter-${{ needs.build.outputs.version }}-win-x64.exe"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/PdfCounter.exe
+          tag_name: v${{ needs.build.outputs.version }}
+          name: v${{ needs.build.outputs.version }}
+          files: dist/PdfCounter-${{ needs.build.outputs.version }}-win-x64.exe
           generate_release_notes: true

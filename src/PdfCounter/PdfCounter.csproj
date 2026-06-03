@@ -8,7 +8,6 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>PdfCounter</AssemblyName>
     <RootNamespace>PdfCounter</RootNamespace>
-    <Version>1.0.0</Version>
     <Authors>PdfCounter</Authors>
     <Description>Подсчёт листов в PDF — перетащите файл или папку</Description>
   </PropertyGroup>

@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        Title = $"PDF Counter v{AppVersion.Current}";
         FoldersGrid.ItemsSource = _folders;
         FilesGrid.ItemsSource = _files;
     }

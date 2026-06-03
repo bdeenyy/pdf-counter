@@ -10,21 +10,37 @@
 - Сводка **по папкам** и детализация **по файлам**
 - Итого: количество файлов и суммарное число листов
 
-## Скачать готовый exe (без сборки)
+## Версия и релизы
 
-После каждого push в `main` GitHub Actions собирает portable `PdfCounter.exe`:
+Текущая версия хранится в файле [`VERSION`](VERSION) (сейчас **1.0.0**). Она попадает в заголовок окна приложения и в сборку CI.
 
-1. Откройте вкладку [Actions](https://github.com/bdeenyy/pdf-counter/actions) → workflow **Build Windows** → последний успешный запуск.
-2. Внизу страницы скачайте артефакт **PdfCounter-win-x64** (внутри один файл `PdfCounter.exe`).
+### Скачать exe без релиза
 
-Релиз с прикреплённым exe (по желанию):
+После push в `main`: [Actions](https://github.com/bdeenyy/pdf-counter/actions) → **Build Windows** → артефакт `PdfCounter-<версия>-win-x64`.
+
+### Опубликовать GitHub Release
+
+**Вариант 1 — тег (рекомендуется):**
 
 ```bash
+# обновите VERSION при необходимости, затем:
+git add VERSION && git commit -m "Release v1.0.0"
 git tag v1.0.0
+git push origin main
 git push origin v1.0.0
 ```
 
-На [Releases](https://github.com/bdeenyy/pdf-counter/releases) появится версия с `PdfCounter.exe` и заметками.
+**Вариант 2 — скрипт (Windows PowerShell):**
+
+```powershell
+.\scripts\release.ps1 -Version 1.0.0
+```
+
+**Вариант 3 — вручную в GitHub:** Actions → **Build Windows** → **Run workflow** → укажите версию → включите **Создать GitHub Release**.
+
+На [Releases](https://github.com/bdeenyy/pdf-counter/releases) появится `PdfCounter-<версия>-win-x64.exe`.
+
+> Job **release** запускается только при push тега `v*` или при ручном запуске с флагом релиза. Обычный push в `main` собирает только артефакт — это ожидаемо.
 
 ## Требования
 
