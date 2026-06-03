@@ -9,6 +9,11 @@ public static class PdfScanner
             ? StringComparer.OrdinalIgnoreCase
             : StringComparer.Ordinal;
 
+    private static readonly StringComparison PathComparison =
+        OperatingSystem.IsWindows()
+            ? StringComparison.OrdinalIgnoreCase
+            : StringComparison.Ordinal;
+
     public static ScanResult Scan(IEnumerable<string> droppedPaths)
     {
         var roots = NormalizeRoots(droppedPaths);
@@ -117,7 +122,7 @@ public static class PdfScanner
                 continue;
 
             var rootFull = Path.GetFullPath(root);
-            if (!directory.StartsWith(rootFull, PathComparer))
+            if (!directory.StartsWith(rootFull, PathComparison))
                 continue;
 
             var relativeDir = directory.Length > rootFull.Length
