@@ -1,5 +1,7 @@
 # PDF Counter
 
+[![Build Windows](https://github.com/bdeenyy/pdf-counter/actions/workflows/build.yml/badge.svg)](https://github.com/bdeenyy/pdf-counter/actions/workflows/build.yml)
+
 Минималистичное Windows-приложение для подсчёта листов в PDF.
 
 ## Возможности
@@ -8,10 +10,26 @@
 - Сводка **по папкам** и детализация **по файлам**
 - Итого: количество файлов и суммарное число листов
 
+## Скачать готовый exe (без сборки)
+
+После каждого push в `main` GitHub Actions собирает portable `PdfCounter.exe`:
+
+1. Откройте вкладку [Actions](https://github.com/bdeenyy/pdf-counter/actions) → workflow **Build Windows** → последний успешный запуск.
+2. Внизу страницы скачайте артефакт **PdfCounter-win-x64** (внутри один файл `PdfCounter.exe`).
+
+Релиз с прикреплённым exe (по желанию):
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+На [Releases](https://github.com/bdeenyy/pdf-counter/releases) появится версия с `PdfCounter.exe` и заметками.
+
 ## Требования
 
 - Windows 10/11
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) — только для локальной сборки
 
 ## Сборка
 
